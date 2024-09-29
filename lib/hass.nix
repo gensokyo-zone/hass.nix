@@ -63,7 +63,8 @@ in {
   groupedEntities = entity:
     if isList entity then concatMap groupedEntities entity
     else if entity ? get then groupedEntities (entity.get { })
-    else entity.create.entities or [ entity ];
+    else if entity ? create.entities then concatMap groupedEntities entity.create.entities
+    else [ entity ];
 
   getSettings = { settings, ... }: settings;
   mapSettings = map getSettings;
