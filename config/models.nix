@@ -1,4 +1,4 @@
-{ hass, lib, ... }: with lib; let
+{ lib, ... }: with lib; let
   mapActions = type: subtypes: listToAttrs (map (subtype: nameValuePair "${type}_${subtype}" {
     inherit type subtype;
   }) subtypes);
@@ -416,6 +416,35 @@
         };
       };
     };
+    tradfri_gu10_380 = {
+      name = "TRADFRI bulb GU10, warm white, 345/380 lm (LED2104R3)";
+      platform = "mqtt";
+      mqtt.zigbee2mqtt = {
+        enable = true;
+        url = "https://www.zigbee2mqtt.io/devices/LED2104R3.html";
+      };
+      entities = {
+        light.light = {
+          brightness = true;
+          brightness_scale = 254;
+          effect = true;
+          effect_list = ikeaEffects;
+          attributes = {
+            state = { };
+            brightness = { };
+          };
+        };
+        select.power_on_behavior = {
+          options = [ "off" "previous" "on" ];
+        };
+        binary_sensor.update_available = {
+          attributes = {
+            linkquality = { };
+            "update.state" = { };
+          };
+        };
+      };
+    };
     tradfri_gu10_400 = {
       name = "TRADFRI LED bulb GU10 400 lumen, dimmable (LED1837R5)";
       platform = "mqtt";
@@ -544,6 +573,48 @@
               linkquality = { };
             };
           };
+        };
+      };
+    };
+  };
+  thirdreality = mapAttrs' (name: model: nameValuePair "thirdreality_${name}" (model // { manufacturer = "THIRDREALITY"; })) {
+    power_meter_plug = {
+      name = "Zigbee / BLE smart plug with power";
+      platform = "mqtt";
+      mqtt.zigbee2mqtt = {
+        enable = true;
+        url = "https://www.zigbee2mqtt.io/devices/3RSP02028BZ.html";
+      };
+      entities = let
+        attributes = {
+          ac_frequency = {};
+          current = {};
+          energy = {};
+          linkquality = {};
+          power = {};
+          power_factor = {};
+          power_on_behavior = {};
+          update = {};
+          update_available = {};
+          voltage = {};
+        };
+      in {
+        switch.switch = {
+          inherit attributes;
+        };
+        sensor = named {
+          Energy = {
+            inherit attributes;
+          };
+          Frequency.disabled = true;
+          Current.disabled = true;
+          Voltage.disabled = true;
+          "Power factor".disabled = true;
+          "Power-on behavior".disabled = true;
+          "Update state".disabled = true;
+        };
+        binary_sensor = named {
+          "Update Available".disabled = true;
         };
       };
     };
@@ -1589,7 +1660,7 @@
   };
 in {
   config.model = mkMerge [
-    ikea tuya esphome brother google_cast apple_tv androidtv companion beacons
+    ikea thirdreality tuya esphome brother google_cast apple_tv androidtv companion beacons
     {
       inherit
         systemd2mqtt google_assistant ipp forecast environment_canada
