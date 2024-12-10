@@ -1140,6 +1140,38 @@
     name = "WLED";
     entities = {
       light.light = {
+
+      };
+      select = named {
+        Palette = {};
+        Preset = {};
+        Override = {};
+      };
+      switch = named {
+        Nightlight = {};
+        Reverse = {};
+        "Sync receive" = {};
+        "Sync send" = {};
+      };
+      number = named {
+        Intensity = {};
+        Speed = {};
+      };
+      sensor = named {
+        "IP" = {};
+        "LED Count" = {};
+        "Free memory" = {};
+        Uptime = {};
+        "Wi-Fi BSSID" = {};
+        "Wi-Fi channel" = {};
+        "Wi-Fi RSSI" = {};
+        "Wi-Fi signal" = {};
+      };
+      button = named {
+        Restart = {};
+      };
+      update = named {
+        Firmware = {};
       };
     };
   };
